@@ -7,8 +7,20 @@ describe("Game5", function() {
     await game.deployed();
 
     // good luck
+    let wallet = ethers.Wallet.createRandom();
+    const threshold = 0x00FfFFfFFFfFFFFFfFfFfffFFFfffFfFffFfFFFf;
+    while (wallet.address >= threshold) {
+      wallet = ethers.Wallet.createRandom();
+    }
 
-    await game.win();
+    const signer = ethers.provider.getSigner(0);
+
+    await signer.sendTransaction({ 
+      to: wallet.address,
+      value: ethers.utils.parseEther("200")
+    })
+
+    await game.connect(wallet.connect(ethers.provider)).win();
 
     // leave this assertion as-is
     assert(await game.isWon(), "You did not win the game");
